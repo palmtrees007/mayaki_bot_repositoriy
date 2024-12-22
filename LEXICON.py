@@ -7,7 +7,8 @@ btns_clbks = {
     'back_btn': 'back_btn_pressed',
     'his_btn': 'his_btn_pressed',
     'argnt_btn': 'argnt_btn_pressed',
-    'mayaki_btn': 'mayaki_btn_pressed'
+    'mayaki_btn': 'mayaki_btn_pressed',
+    'menu_btn': 'menu_btn_pressed'
 }
 
 

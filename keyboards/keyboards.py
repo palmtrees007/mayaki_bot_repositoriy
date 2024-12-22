@@ -10,13 +10,15 @@ inline_back_btn = InlineKeyboardButton(text='Назад', callback_data=btns_clb
 inline_his_btn = InlineKeyboardButton(text='История маяка', callback_data=btns_clbks['his_btn'])
 inline_arrangement_btn = InlineKeyboardButton(text='Устройство ламп', callback_data=btns_clbks['argnt_btn'])
 inline_mayaki_btn = InlineKeyboardButton(text='Про историю маяков', callback_data=btns_clbks['mayaki_btn'])
+inline_menu_btn = InlineKeyboardButton(text='Назад', callback_data=btns_clbks['menu_btn'])
 
 
 def PaginationKeyboard(url) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     adress = InlineKeyboardButton(text='На карте', url=url)
-    builder.row(adress, width=1)
     builder.row(inline_lft_btn, inline_to_know_btn, inline_rht_btn, width=3)
+    builder.row(adress, width=1)
+    builder.row(inline_menu_btn)
     return builder.as_markup()
     
 

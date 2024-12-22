@@ -47,7 +47,7 @@ async def not_start(message: Message):
 
 
 @router.callback_query(F.data == btns_clbks['rht_btn'], StateFilter(FSMPagination.page))
-async def right_btn_pressed(callback: CallbackQuery, pages, state: FSMContext, bot: Bot, all_media_dir):
+async def right_btn_pressed(callback: CallbackQuery, pages, state: FSMContext, all_media_dir):
     data = await state.get_data()
     
     if data['page'] == pages:
@@ -101,7 +101,7 @@ async def to_know_btn_pressed(callback: CallbackQuery, state: FSMContext, text_d
 
     data_for_ans = await state.get_data()
     
-    await callback.message.answer(text=data_for_ans['book'][data_for_ans['page']].replace('\n', ''), 
+    await callback.message.answer(text=data_for_ans['book'][data_for_ans['page']], 
                                   reply_markup=PaginationKbForHis(page=data_for_ans['page']))
     await callback.message.delete()
 
@@ -152,6 +152,14 @@ async def back_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media
     
     data = await state.get_data()
     print(data['page'])
+
+
+@router.callback_query(F.data == btns_clbks['menu_btn'])
+async def menu_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media_dir):
+    state.set_state(default_state)
+    await callback.message.answer(text=texts['greetings'],
+                         reply_markup=StartKb())
+    await callback.message.delete()
 
 
 @router.message()
