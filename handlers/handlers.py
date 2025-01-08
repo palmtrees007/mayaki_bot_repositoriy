@@ -1,15 +1,15 @@
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 
 from keyboards.keyboards import PaginationKeyboard, PaginationKbForHis, StartKb
-from states.states import FSMPagination, HisStage
-from LEXICON import btns_clbks, lighthouses, texts
+from states.states import FSMPagination, HisStage, LampsPag
+from LEXICON import btns_clbks, texts, lamps
 from utils.methods import change_mayak, get_data, prepare_book
+from db_for_lamps.db import Lamp, data_for_lamps
 
-import sqlite3
 import os
 
 
@@ -90,7 +90,7 @@ async def left_btn_pressed(callback: CallbackQuery, pages, state: FSMContext, al
     print(data['page'])
 
 
-@router.callback_query(F.data == btns_clbks['to_know_btn'])
+@router.callback_query(F.data == btns_clbks['to_know_btn'], StateFilter(FSMPagination.page))
 async def to_know_btn_pressed(callback: CallbackQuery, state: FSMContext, text_dir):
     data = await state.get_data()
     m_id = int(data['page'])
@@ -122,7 +122,7 @@ async def right_his_btn_pressed(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == btns_clbks['lft_btn'], StateFilter(HisStage.book))
-async def right_his_btn_pressed(callback: CallbackQuery, state: FSMContext):
+async def left_his_btn_pressed(callback: CallbackQuery, state: FSMContext):
     data_for_ans = await state.get_data()
     
     if data_for_ans['page'] == 1:
@@ -155,11 +155,66 @@ async def back_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media
 
 
 @router.callback_query(F.data == btns_clbks['menu_btn'])
-async def menu_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media_dir):
+async def menu_btn_pressed(callback: CallbackQuery, state: FSMContext):
     state.set_state(default_state)
     await callback.message.answer(text=texts['greetings'],
                          reply_markup=StartKb())
     await callback.message.delete()
+
+
+@router.callback_query(F.data == btns_clbks['argnt_btn'])
+async def argnt_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media_dir):
+    await state.set_state(LampsPag.page)
+    await state.update_data(page=1)
+    lamp: Lamp = data_for_lamps[1]
+    new_photo = FSInputFile(path=os.path.join(all_media_dir, lamp.img))
+
+    await callback.message.answer_photo(photo=new_photo,
+                               caption=lamps[1], 
+                         reply_markup=PaginationKeyboard(url=None))  
+    await callback.message.delete()  
+
+    data = await state.get_data()
+    print(data['page'])
+
+
+@router.callback_query(F.data == btns_clbks['rht_btn'], StateFilter(LampsPag.page))
+async def rht_lamp_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media_dir):
+    data_for_ans = await state.get_data()
+    
+    if data_for_ans['page'] == len(lamps):
+        page = 1
+        await state.update_data(page=1)
+    else:
+        page = data_for_ans['page']+1
+        await state.update_data(page=page)
+
+    
+    new_data = data_for_lamps[page]
+    await change_mayak(name=lamps[page],
+                       url=None,
+                       file=new_data.img,
+                       all_media_dir=all_media_dir,
+                       callback=callback)
+
+
+@router.callback_query(F.data == btns_clbks['lft_btn'], StateFilter(LampsPag.page))
+async def lft_lamp_btn_pressed(callback: CallbackQuery, state: FSMContext, all_media_dir):
+    data_for_ans = await state.get_data()
+
+    if data_for_ans['page'] == 1:
+        page = len(lamps)
+        await state.update_data(page=page)
+    else:
+        page = data_for_ans['page']-1
+        await state.update_data(page=page)
+
+    new_data = data_for_lamps[page]
+    await change_mayak(name=lamps[page],
+                       url=None,
+                       file=new_data.img,
+                       all_media_dir=all_media_dir,
+                       callback=callback)
 
 
 @router.message()

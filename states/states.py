@@ -6,3 +6,7 @@ class FSMPagination(StatesGroup):
 
 class HisStage(StatesGroup):
     book = State()
+
+
+class LampsPag(StatesGroup):
+    page = State()

@@ -8,7 +8,7 @@ import sqlite3
 import os
 
 
-PAGE_SIZE = 800
+PAGE_SIZE = 500
 
 
 async def get_data(m_id):
@@ -40,7 +40,7 @@ async def change_mayak(name: str, url: str, file: str, all_media_dir: str, callb
     media = InputMediaPhoto(media=new_photo, caption=name)
     await callback.message.edit_media(media=media,
                                       reply_markup=PaginationKeyboard(url=url))
-    
+
 
 def _get_part_text(text, start, size):
     smbs = (',', '.', '!', ':', ';', '?')
