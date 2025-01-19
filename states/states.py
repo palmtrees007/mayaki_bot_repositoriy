@@ -10,3 +10,7 @@ class HisStage(StatesGroup):
 
 class LampsPag(StatesGroup):
     page = State()
+
+
+class LampUstPag(StatesGroup):
+    ustr = State()
