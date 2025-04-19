@@ -16,7 +16,7 @@ import os
 router = Router()
 
 
-@router.message(CommandStart(), StateFilter(default_state))
+@router.message(CommandStart())
 async def command_start_pressed(message: Message, state: FSMContext):
     await message.answer(text=texts['greetings'],
                          reply_markup=StartKb())
